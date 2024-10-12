@@ -1,0 +1,57 @@
+services:
+  studio-prototype-mdb:
+    image: mongo
+    restart: always
+    container_name: ${MONGO_CONTAINER_ID}
+    ports:
+      - 127.0.0.1:27017:27017
+    networks:
+      - internal
+    volumes:
+      - './../database/mdb/init/:/docker-entrypoint-initdb.d/:ro'
+      - './../database/mdb/data:/data/db'
+      - './../database/mdb/scripts/:/tmp/scripts/'
+    env_file:
+      - .env
+
+  studio-prototype:
+    image: denoland/deno:alpine
+    container_name: studio-prototype
+    entrypoint: sh
+    user: 1000:1000
+    ports:
+      - 5173:5173
+      - 9229:9229
+    working_dir: /srv/app
+    tty: true
+    volumes:
+      - type: bind
+        source: ./../frontend
+        target: /srv/app/
+    networks:
+      - web
+  
+  studio-prototype-backend:
+    image: denoland/deno:alpine
+    container_name: studio-prototype-backend
+    entrypoint: sh
+    user: 1000:1000
+    ports:
+      - 8080:8080
+    working_dir: /srv/app
+    environment:
+      - MONGO_CONTAINER_ID=${MONGO_CONTAINER_ID}
+    tty: true
+    volumes:
+      - type: bind
+        source: ./../backend
+        target: /srv/app/
+    networks:
+      - internal
+      - web
+
+networks:
+  web: 
+    external: true
+  internal:
+    external: false
