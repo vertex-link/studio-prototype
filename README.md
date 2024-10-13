@@ -2,7 +2,7 @@
 
 The Remote Editor allows users to collaboratively work on 3D scenes with a streamlined workflow. The main goal is to publish a 3D application under a specified link.
 
-![Editor Example](data/readme_images/highlevel.png)
+![Editor Example](stuff/readme_images/highlevel.png)
 
 ## High-Level Setup
 
@@ -18,7 +18,7 @@ To manage users and provide basic authentication/authorization, there’s an aut
 
 The backend maintains file paths to verify all assets for a project are loaded and tracks the relationships between them.
 
-![Data Model](data/readme_images/dataschema.png)
+![Data Model](stuff/readme_images/dataschema.png)
 
 ### Simplified Data Model Example:
 ```ts
