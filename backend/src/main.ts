@@ -1,5 +1,3 @@
-import { Cookie, setCookie } from "jsr:@std/http";
-
 const userSockets: Map<string, WebSocket> = new Map();
 type Id = {
   id?: string;
@@ -38,14 +36,12 @@ const createNewSocket = (req: Request, id: string = "") => {
     userSockets.forEach((user) => {
       user.send(event.data);
     });
-    // console.log(event.data);
-    // socket.send(event.data);
   };
 
   return response;
 };
 
-Deno.serve({ port: 8080, hostname: "0.0.0.0" }, async (req: Request) => {
+Deno.serve({ port: 8080, hostname: "0.0.0.0" }, (req: Request) => {
   if (req.headers.get("upgrade") != "websocket") {
     return new Response(null, { status: 501 });
   }
@@ -81,23 +77,23 @@ Deno.serve({ port: 8080, hostname: "0.0.0.0" }, async (req: Request) => {
   //   console.log("Body:", body);
   // }
 
-  return new Response(
-    `${req.method} ${url.pathname} \n with headers:\n ${
-      JSON.stringify(
-        Object.fromEntries([...headers]),
-      )
-    } \n \t url.searchParams \n${
-      JSON.stringify(
-        Object.fromEntries([...url.searchParams]),
-      )
-    } \n\n\nset response headers \n${
-      JSON.stringify(
-        Object.fromEntries([...headers]),
-      )
-    }`,
-    {
-      headers,
-    },
-  );
+  // return new Response(
+  //   `${req.method} ${url.pathname} \n with headers:\n ${
+  //     JSON.stringify(
+  //       Object.fromEntries([...headers]),
+  //     )
+  //   } \n \t url.searchParams \n${
+  //     JSON.stringify(
+  //       Object.fromEntries([...url.searchParams]),
+  //     )
+  //   } \n\n\nset response headers \n${
+  //     JSON.stringify(
+  //       Object.fromEntries([...headers]),
+  //     )
+  //   }`,
+  //   {
+  //     headers,
+  //   },
+  // );
   // return new Response('Hello World');
 });

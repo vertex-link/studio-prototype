@@ -2,7 +2,7 @@
 import { TresCanvas } from "@tresjs/core";
 import { OrbitControls } from "@tresjs/cientos";
 import { onMounted, Ref, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { PerspectiveCamera } from "three";
 
 const route = useRoute();
