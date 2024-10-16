@@ -428,9 +428,14 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@tresjs/cientos@^4.0.3",
+        "npm:@tresjs/core@^4.3.1",
+        "npm:@types/three@0.169",
         "npm:@vitejs/plugin-vue@^5.1.4",
+        "npm:three@0.169",
         "npm:typescript@^5.5.3",
         "npm:vite@^5.4.8",
+        "npm:vue-router@^4.4.5",
         "npm:vue-tsc@^2.1.6",
         "npm:vue@^3.5.10"
       ]
