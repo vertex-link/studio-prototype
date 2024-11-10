@@ -1,9 +1,19 @@
 {
   "tasks": {
-    "dev": "deno run -N --watch src/main.ts"
+    "dev": "deno run -N --watch --allow-env src/main.ts"
   },
   "imports": {
+    "@backend/": "./src/",
+    "@db/mongo": "jsr:@db/mongo@^0.33.0",
+    "@interface_types/": "./../interface_types/",
+    "@oak/oak": "jsr:@oak/oak@^17.1.0",
+    "@services/": "./src/services/",
     "@std/assert": "jsr:@std/assert@1",
-    "@std/http": "jsr:@std/http@^1.0.8"
+    "@std/encoding": "jsr:@std/encoding@^1.0.5",
+    "@std/http": "jsr:@std/http@^1.0.8",
+    "@tajpouria/cors": "jsr:@tajpouria/cors@^1.2.1",
+    "@wok/djwt": "jsr:@wok/djwt@^3.0.2",
+    "sessions": "https://deno.land/x/oak_sessions@v4.1.11/mod.ts",
+    "SMTPClient": "https://deno.land/x/denomailer/mod.ts"
   }
 }

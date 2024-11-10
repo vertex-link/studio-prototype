@@ -1,99 +1,27 @@
-const userSockets: Map<string, WebSocket> = new Map();
-type Id = {
-  id?: string;
-};
-type UpdateSocket = WebSocket & Id;
+import { Application } from "@oak/oak";
+import { AppState } from "./types/application.ts";
+import { Session } from "sessions";
+import staticRoutes from "@backend/static/routes.ts";
+import auth from "@backend/auth/routes.ts";
+import { oakCors } from "@tajpouria/cors";
+const app = new Application<AppState>();
 
-const createNewSocket = (req: Request, id: string = "") => {
-  const { socket, response } = Deno.upgradeWebSocket(req);
-  let returnSocket: UpdateSocket | undefined = userSockets.get(id);
+// const store = await createSessionStore();
 
-  if (returnSocket) {
-    socket.close();
-    returnSocket = userSockets.get(id);
-    return response;
-  }
+const sessionMiddleware = Session.initMiddleware();
 
-  if (!returnSocket) {
-    returnSocket = socket;
-  }
-
-  if (returnSocket) {
-    returnSocket.addEventListener("open", () => {
-      returnSocket.id = crypto.randomUUID();
-      userSockets.set(returnSocket.id, socket);
-      returnSocket.send(JSON.stringify({ userId: returnSocket.id }));
-      console.log("a client connected!");
-    });
-  }
-
-  returnSocket.onclose = () => {
-    if (!returnSocket.id) return;
-    userSockets.delete(returnSocket.id);
-  };
-
-  socket.onmessage = (event) => {
-    userSockets.forEach((user) => {
-      user.send(event.data);
-    });
-  };
-
-  return response;
-};
-
-Deno.serve({ port: 8080, hostname: "0.0.0.0" }, (req: Request) => {
-  if (req.headers.get("upgrade") != "websocket") {
-    return new Response(null, { status: 501 });
-  }
-
-  const params = new URL(req.url).searchParams;
-  const userId = params.get("userId") || "";
-
-  // console.log(cookie);
-
-  // console.log(Object.fromEntries([...headers]), req);
-
-  // const url = new URL(req.url);
-
-  // if (req.body) {
-  //   const body = await req.text();
-  //   console.log("Body:", body);
-  // }
-  const socketResponse = createNewSocket(req, userId);
-
-  return socketResponse;
-
-  // const headers = new Headers();
-  // const cookie: Cookie = {
-  //   name: "hungry",
-  //   value: "monster",
-  // };
-  // setCookie(headers, cookie);
-
-  // const url = new URL(req.url);
-
-  // if (req.body) {
-  //   const body = await req.text();
-  //   console.log("Body:", body);
-  // }
-
-  // return new Response(
-  //   `${req.method} ${url.pathname} \n with headers:\n ${
-  //     JSON.stringify(
-  //       Object.fromEntries([...headers]),
-  //     )
-  //   } \n \t url.searchParams \n${
-  //     JSON.stringify(
-  //       Object.fromEntries([...url.searchParams]),
-  //     )
-  //   } \n\n\nset response headers \n${
-  //     JSON.stringify(
-  //       Object.fromEntries([...headers]),
-  //     )
-  //   }`,
-  //   {
-  //     headers,
-  //   },
-  // );
-  // return new Response('Hello World');
+const cors = oakCors({
+  credentials: true,
+  origin: Deno.env.get("CORS_ORIGIN"),
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 });
+
+app.use(cors);
+app.use(sessionMiddleware);
+
+app.use(auth.routes());
+// app.use(router.routes());
+app.use(staticRoutes.routes());
+
+const port = parseInt(Deno.env.get("BE_INTERN_PORT") || "8080");
+await app.listen({ port });

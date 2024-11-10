@@ -8,9 +8,9 @@ services:
     networks:
       - internal
     volumes:
-      - './../database/mdb/init/:/docker-entrypoint-initdb.d/:ro'
-      - './../database/mdb/data:/data/db'
-      - './../database/mdb/scripts/:/tmp/scripts/'
+      - "./../database/mdb/init/:/docker-entrypoint-initdb.d/:ro"
+      - "./../database/mdb/data:/data/db"
+      - "./../database/mdb/scripts/:/tmp/scripts/"
     env_file:
       - .env
 
@@ -22,36 +22,44 @@ services:
     ports:
       - 5173:5173
       - 9229:9229
-    working_dir: /srv/app
+    working_dir: /srv/app/frontend
     tty: true
+    environment:
+      - VITE_API_ENDPOINT=${BACKEND_ORIGIN}/
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
       - type: bind
-        source: ./../frontend
+        source: ./../
         target: /srv/app/
     networks:
       - web
-  
+
   studio-prototype-backend:
     image: denoland/deno:alpine
     container_name: studio-prototype-backend
     entrypoint: sh
     user: 1000:1000
     ports:
-      - 8080:8080
-    working_dir: /srv/app
+      - 8081:8080
+    working_dir: /srv/app/backend
     environment:
+      - MONGO_APP_USER=${MONGO_APP_USER}
       - MONGO_CONTAINER_ID=${MONGO_CONTAINER_ID}
+      - MONGO_APP_PASSWORD=${MONGO_APP_PASSWORD}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - MONGO_SERVER=${MONGO_SERVER}
+      - JWT_SECRET=${JWT_SECRET}
     tty: true
     volumes:
       - type: bind
-        source: ./../backend
+        source: ./../
         target: /srv/app/
     networks:
       - internal
       - web
 
 networks:
-  web: 
+  web:
     external: true
   internal:
     external: false
