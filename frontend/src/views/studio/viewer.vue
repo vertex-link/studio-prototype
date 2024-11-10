@@ -5,6 +5,10 @@ import { onMounted, Ref, ref } from "vue";
 import { useRoute } from "vue-router";
 import { PerspectiveCamera } from "three";
 
+import { useUserStore } from "../../stores/auth.ts";
+
+const userStore = useUserStore();
+
 const route = useRoute();
 const params = new URLSearchParams(window.location.search);
 console.log(route.query);
@@ -15,16 +19,17 @@ const socket = ref<WebSocket>();
 const setQueryStringParameter = (name: string, value: string) => {
   params.set(name, value);
   window.history.replaceState(
-      {},
-      "",
-      decodeURIComponent(`${window.location.pathname}?${params}`)
+    {},
+    "",
+    decodeURIComponent(`${window.location.pathname}?${params}`)
   );
 };
 
 onMounted(async () => {
   console.log(root.value.toJSON());
   socket.value = new WebSocket(
-      `ws://0.0.0.0:8080?userId=${params.get("userId")}`
+    `ws://0.0.0.0:8081
+    ?userId=${userStore.userId}`
   );
 
   socket.value.addEventListener("message", (msg) => {
@@ -57,9 +62,9 @@ const pingWebsocket = () => {
       <TresScene ref="root">
         <OrbitControls />
         <TresPerspectiveCamera
-            ref="camera"
-            :position="[3, 3, 3]"
-            :look-at="[0, 0, 0]"
+          ref="camera"
+          :position="[3, 3, 3]"
+          :look-at="[0, 0, 0]"
         />
         <TresMesh>
           <TresTorusGeometry :args="[1, 0.5, 16, 32]" />

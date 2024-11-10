@@ -18,19 +18,16 @@ import type { AppState } from "@backend/types/application.ts";
 
 const invite = async (ctx: Context<AppState>) => {
     const userAuthenticated = await isUserAuthenticated(ctx);
-    
+
     if (!userAuthenticated) {
         ctx.response.status = 400;
         return;
     }
 
-    const req = await getValidatedRequest(ctx);
-
-    console.log('invite req', req);
-
+    const req = JSON.parse(await getValidatedRequest(ctx));
 
     const token = await generateJWT({
-        aud: req,
+        aud: req.mail,
         expInH: 24,
         iss: req.iss,
         sub: "invite",
@@ -41,7 +38,12 @@ const invite = async (ctx: Context<AppState>) => {
         token: token,
         expireAt: getExplorationDateInH(1),
     };
-    
+
+    try {
+        await sendInviteMail(invite);
+    } catch {
+        console.log("mail error");
+    }
 
     try {
         await inviteUser(invite);
@@ -51,12 +53,6 @@ const invite = async (ctx: Context<AppState>) => {
         ctx.response.status = 400;
 
         return;
-    }
-
-    try {
-        await sendInviteMail(invite);
-    } catch {
-        console.log("mail error");
     }
 
     ctx.response.status = 200;

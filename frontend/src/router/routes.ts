@@ -1,15 +1,16 @@
-import {RouteRecord, RouteRecordRaw} from "vue-router";
+import { RouteRecordRaw } from "vue-router";
 import Login from "../views/auth/Login.vue";
+import Viewer from "../views/studio/viewer.vue";
 import Registration from "../views/auth/Registration.vue";
-import {mapRoutes} from "./router.ts";
-import {AuthState} from "../../../interface_types/auth.ts";
+import { mapRoutes } from "./router.ts";
+import { AuthState } from "../../../interface_types/auth.ts";
 import Invite from "../views/auth/Invite.vue";
 import Default from "../layouts/default.vue";
-import {updateAuthState} from "../services/AuthService.ts";
+import { updateAuthState } from "../services/AuthService.ts";
 
 const isLoggedIn = async (to: any, from: any, next: any) => {
     let authState = await updateAuthState();
-    // if (!authState) return;
+    if (!authState) return;
 
     authState = authState as AuthState;
 
@@ -31,11 +32,8 @@ export const mapRoutes = (routes: Routes) => {
 };
 
 export type Routes = {
-    [key: string]: RouteRecord;
+    [key: string]: RouteRecordRaw;
 };
-
-const IisLoggedIn = isLoggedIn;
-
 
 export const ROUTES_INT: Routes = {
     /*dashboard: {
@@ -49,21 +47,20 @@ export const ROUTES_INT: Routes = {
         component: () => import('@views/UserSettings.vue'),
     },*/
     invite: {
-        path: 'Invite',
-        name: 'Invite',
+        path: "Invite",
+        name: "Invite",
         components: {
             default: Invite,
             layout: Default,
         },
-    }
+    },
 };
-
 
 const ROUTES: Routes = {};
 
 ROUTES.int = {
-    path: '/int',
-    name: 'InternalArea',
+    path: "/int",
+    name: "InternalArea",
     redirect() {
         return ROUTES_INT.dashboard;
     },
@@ -72,8 +69,8 @@ ROUTES.int = {
 };
 
 ROUTES.login = {
-    path: '/login',
-    name: 'Login',
+    path: "/login",
+    name: "Login",
     components: {
         default: Login,
         layout: Default,
@@ -82,21 +79,27 @@ ROUTES.login = {
 };
 
 ROUTES.registration = {
-    path: '/registration',
-    name: 'Registration',
+    path: "/registration",
+    name: "Registration",
     components: {
         default: Registration,
+        layout: Default,
+    },
+};
+
+ROUTES.studio = {
+    path: "/studio",
+    name: "Studio",
+    beforeEnter: [isLoggedIn],
+    components: {
+        default: Viewer,
         layout: () => Default,
     },
 };
 
 ROUTES.home = {
-    path: '/:pathMatch(.*)',
+    path: "/:pathMatch(.*)",
     redirect: ROUTES.login,
-    components: {
-        default: Login,
-        layout: Default,
-    },
 };
 
 export { ROUTES };

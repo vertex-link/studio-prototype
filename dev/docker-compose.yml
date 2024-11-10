@@ -3,6 +3,7 @@ services:
     image: mongo
     restart: always
     container_name: ${MONGO_CONTAINER_ID}
+    command: "deno run dev"
     ports:
       - 127.0.0.1:27017:27017
     networks:
@@ -13,7 +14,13 @@ services:
       - "./../database/mdb/scripts/:/tmp/scripts/"
     env_file:
       - .env
-
+  mailcrab:
+    image: mailhog/mailhog
+    ports:
+      - "1080:8025"
+      - "1025:1025"
+    networks:
+      - internal
   studio-prototype:
     image: denoland/deno:alpine
     container_name: studio-prototype
@@ -32,12 +39,12 @@ services:
         source: ./../
         target: /srv/app/
     networks:
-      - web
-
+      - internal
   studio-prototype-backend:
     image: denoland/deno:alpine
     container_name: studio-prototype-backend
     entrypoint: sh
+    command: "deno run dev"
     user: 1000:1000
     ports:
       - 8081:8080
@@ -49,6 +56,9 @@ services:
       - CORS_ORIGIN=${CORS_ORIGIN}
       - MONGO_SERVER=${MONGO_SERVER}
       - JWT_SECRET=${JWT_SECRET}
+      - MAIL_SERVER=${MAIL_SERVER}
+      - MAIL_REGISTER_USER=${MAIL_REGISTER_USER}
+      - MAIL_REGISTER_PASSWORD=${MAIL_REGISTER_PASSWORD}
     tty: true
     volumes:
       - type: bind

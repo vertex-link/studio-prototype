@@ -1,6 +1,5 @@
 import { SMTPClient } from "SMTPClient";
 // import { Invite } from '@schema/invite.ts';
-// import { renderMarkup, RENDER_TYPE } from './markup.ts';
 
 import type { Invite } from "@backend/types/invite.ts";
 
@@ -10,25 +9,12 @@ const FRONTEND_URL = Deno.env.get("CORS_ORIGIN");
 
 const MAIL_REGISTER_PASSWORD = Deno.env.get("MAIL_REGISTER_PASSWORD");
 const MAIL_REGISTER_USER = Deno.env.get("MAIL_REGISTER_USER");
-const MAIL_SERVER = Deno.env.get("MAIL_SERVER") || "";
-const MAIL_PORT = 25;
+const MAIL_SERVER = Deno.env.get("MAIL_SERVER") || "mailcrab";
+// const MAIL_SERVER = "mailcrab";
+const MAIL_PORT = 1025;
 const MAIL_TLS = false;
 
 const sendInviteMail = (invite: Invite) => {
-    // const content = await renderMarkup({
-    //     layout: "invite",
-    //     type: "mail" as unknown as RENDER_TYPE,
-    //     parameters: {
-    //         link: `${FRONTEND_URL}/registration?token=${
-    //             encodeURIComponent(invite.token)
-    //         }&mail=${
-    //             encodeURIComponent(
-    //                 invite.aud,
-    //             )
-    //         }`,
-    //     },
-    // });
-
     const content = `${FRONTEND_URL}/registration?token=${
         encodeURIComponent(invite.token)
     }&mail=${
@@ -79,6 +65,9 @@ const sendMail = async (
         if (!MAIL_SERVER) return Promise.reject();
 
         const client: SMTPClient = new SMTPClient({
+            debug: {
+                allowUnsecure: true,
+            },
             connection: {
                 hostname: MAIL_SERVER,
                 port: MAIL_PORT,
@@ -91,11 +80,11 @@ const sendMail = async (
         });
 
         await client.send({
-            from: user,
+            from: "noreply@test.de",
             to: aud,
             subject: subject,
             content: content,
-            html: content,
+            html: `<a href="${content}">Invite link</a>`,
         });
 
         await client.close();

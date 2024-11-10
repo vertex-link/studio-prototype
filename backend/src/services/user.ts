@@ -17,13 +17,10 @@ export const isUsernameAvail = async (name: string) => {
 };
 
 export const attemptLogin = async (userData: User): Promise<AuthState> => {
-
-
     const user: User[] = await getUsers({ mail: { $eq: userData.mail } }, {
         mail: 1,
         password: 1,
     });
-
 
     if (!(user[0] as unknown as User) || !user[0].password) {
         return {
@@ -31,7 +28,6 @@ export const attemptLogin = async (userData: User): Promise<AuthState> => {
         };
     }
     const passHash = await getHash(userData.password as string);
-    console.log('user:', user[0].password, passHash);
 
     if (passHash === user[0].password) {
         return {
