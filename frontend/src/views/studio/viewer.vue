@@ -28,8 +28,7 @@ const setQueryStringParameter = (name: string, value: string) => {
 onMounted(async () => {
   console.log(root.value.toJSON());
   socket.value = new WebSocket(
-    `ws://0.0.0.0:8081
-    ?userId=${userStore.userId}`
+    `ws://0.0.0.0:8081/studio/socket?userId=${userStore.userId}`
   );
 
   socket.value.addEventListener("message", (msg) => {

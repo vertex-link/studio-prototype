@@ -8,7 +8,7 @@ import { isUsernameAvail } from "@services/user.ts";
 import type { Context } from "@oak/oak";
 
 export async function registration(ctx: Context) {
-    const req = JSON.parse(await getValidatedRequest(ctx));
+    const req = JSON.parse(await getValidatedRequest(ctx) as string);
 
     console.log(req);
 

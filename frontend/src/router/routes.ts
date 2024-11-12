@@ -15,7 +15,7 @@ const isLoggedIn = async (to: any, from: any, next: any) => {
     authState = authState as AuthState;
 
     if (authState.authorized && to.name === ROUTES.login.name) {
-        next(ROUTES.int);
+        next(ROUTES.studio);
     } else if (!authState.authorized && to.name === ROUTES.login.name) {
         next();
     } else if (authState.authorized) {
