@@ -8,12 +8,15 @@ import { isUsernameAvail } from "@services/user.ts";
 import type { Context } from "@oak/oak";
 
 export async function registration(ctx: Context) {
-    const req = await getValidatedRequest(ctx);
+    const req = JSON.parse(await getValidatedRequest(ctx));
+
+    console.log(req);
 
     if (
         !(req.token && req.mail && req.password && req.password_repeat &&
             req.username)
     ) {
+        ctx.response.body = "not all set";
         ctx.response.status = 400;
         return;
     }

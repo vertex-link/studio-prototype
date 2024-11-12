@@ -3,7 +3,6 @@ services:
     image: mongo
     restart: always
     container_name: ${MONGO_CONTAINER_ID}
-    command: "deno run dev"
     ports:
       - 127.0.0.1:27017:27017
     networks:
@@ -24,7 +23,7 @@ services:
   studio-prototype:
     image: denoland/deno:alpine
     container_name: studio-prototype
-    entrypoint: sh
+    command: deno run dev
     user: 1000:1000
     ports:
       - 5173:5173
@@ -43,8 +42,7 @@ services:
   studio-prototype-backend:
     image: denoland/deno:alpine
     container_name: studio-prototype-backend
-    entrypoint: sh
-    command: "deno run dev"
+    command: deno run dev
     user: 1000:1000
     ports:
       - 8081:8080
