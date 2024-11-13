@@ -1,28 +1,37 @@
 import type { Context, Router } from "@oak/oak";
 import { createNewSocket } from "@backend/studio/index.ts";
+import { getUserFromSession } from "@services/user.ts";
+import type { AppState } from "@backend/types/application.ts";
 
-export const addStudioRoutes = (router: Router) => {
-    router.get("/studio/socket", (context: Context) => {
-        if (!context.isUpgradable) {
-            context.throw(501);
-        }
-        const ws = context.upgrade();
+const setUpWebSocket = async (context: Context<AppState>) => {
+    const userId = context.request.url.searchParams.get("userId") as string;
 
-        const params = new URL(context.request.url).searchParams;
-        const userId = params.get("userId") || "";
+    console.log("quserId", userId);
 
-        // console.log(cookie);
+    if (!context.isUpgradable || userId === undefined) {
+        context.throw(501);
+    }
+    const ws = context.upgrade();
 
-        // console.log(Object.fromEntries([...headers]), req);
+    // console.log(cookie);
 
-        // const url = new URL(req.url);
+    // console.log(Object.fromEntries([...headers]), req);
 
-        // if (req.body) {
-        //   const body = await req.text();
-        //   console.log("Body:", body);
-        // }
-        const socketResponse = createNewSocket(ws, context.response, userId);
+    // const url = new URL(req.url);
 
-        return socketResponse;
-    });
+    // if (req.body) {
+    //   const body = await req.text();
+    //   console.log("Body:", body);
+    // }
+
+    const socketResponse = createNewSocket(ws, context.response, userId);
+
+    return socketResponse;
+};
+
+export const addStudioRoutes = (router: Router<AppState>) => {
+    router.get(
+        "/studio/socket",
+        async (context) => await setUpWebSocket(context),
+    );
 };

@@ -6,11 +6,12 @@ import { addAuthRoutes } from "@backend/auth/routes.ts";
 import { oakCors } from "@tajpouria/cors";
 import { addUserRoutes } from "@backend/user/routes.ts";
 import { addStudioRoutes } from "@backend/studio/routes.ts";
+
 const app = new Application<AppState>();
 
 // const store = await createSessionStore();
 
-const sessionMiddleware = Session.initMiddleware();
+const router = new Router<AppState>();
 
 const cors = oakCors({
   credentials: true,
@@ -18,14 +19,12 @@ const cors = oakCors({
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 });
 
-const router = new Router();
+app.use(cors);
+app.use(Session.initMiddleware());
 
 addAuthRoutes(router);
 addUserRoutes(router);
 addStudioRoutes(router);
-
-app.use(cors);
-app.use(sessionMiddleware);
 
 app.use(router.routes());
 // app.use(router.routes());

@@ -3,7 +3,7 @@ import { getValidatedRequest } from "@backend/services/auth.ts";
 import { attemptLogin } from "@services/user.ts";
 import { AppState } from "@backend/types/application.ts";
 import { AuthState } from "@interface_types/auth.ts";
-import {User} from "../../types/user.ts";
+import { User } from "../../types/user.ts";
 
 const logout = async (ctx: Context<AppState>) => {
     await ctx.state.session.deleteSession();
@@ -13,9 +13,11 @@ const logout = async (ctx: Context<AppState>) => {
 const login = async (ctx: Context<AppState>) => {
     const sessionMail = await ctx.state.session.get("mail");
     const userId = await ctx.state.session.get("id");
-    
-    const req = JSON.parse(await getValidatedRequest(ctx)) as unknown as User;
-    
+
+    const req = JSON.parse(
+        await getValidatedRequest(ctx) as string,
+    ) as unknown as User;
+
     if (sessionMail && userId) {
         ctx.response.body = {
             loggedInFromSession: true,
@@ -27,7 +29,7 @@ const login = async (ctx: Context<AppState>) => {
     try {
         const status = await attemptLogin(req);
 
-        console.log('status', status);
+        console.log("status", status);
 
         if (status?.authorized) {
             ctx.state.session.set("mail", status.mail);
@@ -59,9 +61,10 @@ const login = async (ctx: Context<AppState>) => {
 };
 
 const getAuthState = async (ctx: Context<AppState>) => {
-    const session = await ctx.state.session;
+    const session = ctx.state.session;
     const sessionMail = session.get("mail");
     const userId = session.get("id");
+    console.log("userId", userId);
 
     let authState: AuthState = {
         authorized: false,
