@@ -35,7 +35,7 @@ export async function getHash(src: string) {
 
 export const getValidatedRequest = async (ctx: Context) => {
     const result = await ctx.request.body.text();
-    let req;
+        let req;
 
     if (ctx.request.headers.get("Content-Type") !== "application/json") {
         ctx.response.status = 415;

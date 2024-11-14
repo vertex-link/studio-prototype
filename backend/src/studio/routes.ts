@@ -13,25 +13,17 @@ const setUpWebSocket = async (context: Context<AppState>) => {
     }
     const ws = context.upgrade();
 
-    // console.log(cookie);
-
-    // console.log(Object.fromEntries([...headers]), req);
-
-    // const url = new URL(req.url);
-
-    // if (req.body) {
-    //   const body = await req.text();
-    //   console.log("Body:", body);
-    // }
-
     const socketResponse = createNewSocket(ws, context.response, userId);
 
     return socketResponse;
 };
 
+const getScene = async (ctx: Context<AppState>) => {
+    return ctx.response;
+}
+
 export const addStudioRoutes = (router: Router<AppState>) => {
-    router.get(
-        "/studio/socket",
-        async (context) => await setUpWebSocket(context),
-    );
+    router
+        .get('/studio/scene/', getScene)
+        .get("/studio/socket", setUpWebSocket);
 };

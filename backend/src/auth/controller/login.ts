@@ -1,9 +1,9 @@
 import { Context } from "@oak/oak";
-import { getValidatedRequest } from "@backend/services/auth.ts";
+import { getValidatedRequest } from "@services/auth.ts";
 import { attemptLogin } from "@services/user.ts";
 import { AppState } from "@backend/types/application.ts";
 import { AuthState } from "@interface_types/auth.ts";
-import { User } from "../../types/user.ts";
+import { User } from "@backend/types/user.ts";
 
 const logout = async (ctx: Context<AppState>) => {
     await ctx.state.session.deleteSession();
@@ -60,7 +60,7 @@ const login = async (ctx: Context<AppState>) => {
     }
 };
 
-const getAuthState = async (ctx: Context<AppState>) => {
+const getAuthState = (ctx: Context<AppState>) => {
     const session = ctx.state.session;
     const sessionMail = session.get("mail");
     const userId = session.get("id");

@@ -6,7 +6,9 @@ type Id = {
 };
 
 type UpdateSocket = WebSocket & Id;
-
+// TODO: Implement with WebRTC
+// The plan is to do the first implementaion with WebSockets and create a fitting schema to update the entities and upgrade based on that schmea to a webrtc connection.
+// This would involve moving parts of the update mechanism to the frontend and implement the signaling server on the backend side
 export const createNewSocket = (
     socket: WebSocket,
     response: Response,
@@ -18,7 +20,7 @@ export const createNewSocket = (
     console.log("return socket init", returnSocket);
 
     if (returnSocket) {
-        console.log("returen socket exits. closing new socket", returnSocket);
+        console.log("return socket exits. closing new socket", returnSocket);
         socket.close();
         returnSocket = userSockets.get(id);
         return response;
@@ -34,7 +36,6 @@ export const createNewSocket = (
             returnSocket.id = id;
             userSockets.set(id, socket);
             // returnSocket.send(JSON.stringify({ userId: returnSocket.id }));
-            console.log("a client connected!");
         });
     }
 
@@ -44,10 +45,7 @@ export const createNewSocket = (
     };
 
     socket.onmessage = (event) => {
-        // console.log(event);
-
         userSockets.forEach((socket) => {
-            // console.log(socket);
             if (socket.id !== id) {
                 socket.send(event.data);
             }
