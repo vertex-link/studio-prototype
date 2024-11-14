@@ -4,7 +4,7 @@ import { getAuthState, login, logout } from "@backend/auth/controller/login.ts";
 import { registration } from "@backend/auth/controller/registration.ts";
 import { invite } from "@backend/auth/controller/invite.ts";
 
-export const addAuthRoutes = (router: Router) => {
+export const addAuthRoutes = (router: Router<AppState>) => {
     router.post("/login", (ctx: Context<AppState>) => login(ctx))
         .post("/logout", (ctx: Context<AppState>) => logout(ctx))
         .post("/registration", (ctx: Context) => registration(ctx))

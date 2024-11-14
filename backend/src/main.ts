@@ -1,15 +1,16 @@
 import { Application, Router } from "@oak/oak";
-import { AppState } from "./types/application.ts";
+import { AppState } from "@backend/types/application.ts";
 import { Session } from "sessions";
 import staticRoutes from "@backend/static/routes.ts";
 import { addAuthRoutes } from "@backend/auth/routes.ts";
 import { oakCors } from "@tajpouria/cors";
 import { addUserRoutes } from "@backend/user/routes.ts";
 import { addStudioRoutes } from "@backend/studio/routes.ts";
+import { createSessionStore } from "@services/session.ts";
 
 const app = new Application<AppState>();
 
-// const store = await createSessionStore();
+const store = await createSessionStore();
 
 const router = new Router<AppState>();
 
@@ -20,14 +21,14 @@ const cors = oakCors({
 });
 
 app.use(cors);
-app.use(Session.initMiddleware());
+app.use(Session.initMiddleware(store));
 
 addAuthRoutes(router);
 addUserRoutes(router);
 addStudioRoutes(router);
 
 app.use(router.routes());
-// app.use(router.routes());
+
 app.use(staticRoutes.routes());
 
 const port = parseInt(Deno.env.get("BE_INTERN_PORT") || "8080");

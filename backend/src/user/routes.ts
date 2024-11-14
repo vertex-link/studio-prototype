@@ -2,8 +2,9 @@ import type { Context, Router } from "@oak/oak";
 import { helpers } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { isUsernameAvail } from "@services/user.ts";
 import { getUsers } from "@services/mongo/users.ts";
+import type { AppState } from "@backend/types/application.ts";
 
-export const addUserRoutes = (router: Router) => {
+export const addUserRoutes = (router: Router<AppState>) => {
     router.get("/user/name-available/:name", async (ctx: Context) => {
         const params = helpers.getQuery(ctx, { mergeParams: true });
 
